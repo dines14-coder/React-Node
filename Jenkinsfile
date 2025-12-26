@@ -10,6 +10,8 @@ pipeline {
                 REMOTEUSERNAME="citpladmin"
                 REMOTEIP="13.233.126.210"
                 DESTINATION_PATH="/home/citpladmin/compose"
+                BACKEND_ENV="backend-env-file"
+                FRONTEND_ENV="frontend-env-file"
     }
 
         
@@ -70,27 +72,44 @@ pipeline {
         }
         
 
-        stage('Transfer Compose & Deploy') {
-            steps {
-                sh 'sed -i -E "s/hepl:.*/${REACT_REPLACE}/g" docker-compose.yaml'
-                sh 'sed -i -E "s/citpl:.*/${NODE_REPLACE}/g" docker-compose.yaml'
-                sh "ls -ltr"
-            }
-            steps {
-                sshagent(credentials: ['server-b-ssh']) {
-                    sh '''
-                        rsync -avz docker-compose.yaml \
-                        ${REMOTEUSERNAME}@${REMOTEIP}:${DESTINATION_PATH}
-        
-                        ssh -o StrictHostKeyChecking=no ${REMOTEUSERNAME}@${REMOTEIP} << EOF
+stage('Transfer Compose & Deploy') {
+    steps {
+        withCredentials([
+            file(credentialsId: 'backend-env-file', variable: 'BACKEND_ENV'),
+            file(credentialsId: 'frontend-env-file', variable: 'FRONTEND_ENV')
+        ]) {
+            sshagent(credentials: ['server-b-ssh']) {
+                sh """
+                    sed -i -E "s/hepl:.*/${REACT_REPLACE}/g" docker-compose.yaml
+                    sed -i -E "s/citpl:.*/${NODE_REPLACE}/g" docker-compose.yaml
+
+                    ssh -o StrictHostKeyChecking=no ${REMOTEUSERNAME}@${REMOTEIP} "mkdir -p ${DESTINATION_PATH}/backend"
+                    ssh -o StrictHostKeyChecking=no ${REMOTEUSERNAME}@${REMOTEIP} "mkdir -p ${DESTINATION_PATH}/frontend"
+
+                    rsync -avz docker-compose.yaml \
+                        ${BACKEND_ENV} \
+                        ${REMOTEUSERNAME}@${REMOTEIP}:${DESTINATION_PATH}/backend/
+
+                    rsync -avz ${FRONTEND_ENV} \
+                        ${REMOTEUSERNAME}@${REMOTEIP}:${DESTINATION_PATH}/frontend/
+
+
+                    ssh -o StrictHostKeyChecking=no ${REMOTEUSERNAME}@${REMOTEIP} << EOF
                         cd ${DESTINATION_PATH}
-                        docker-compose down || true
-                        docker-compose -f docker-compose.yaml up -d
-                        EOF
-                    '''
+
+
+                        chmod 600 backend/.env
+                        chmod 600 frontend/.env
+
+                        docker compose down || true
+                        docker compose up -d
+                    EOF
+                """
+            }
         }
     }
-        }
+}
+
 
         stage('Update Deployment File') {
             environment {
