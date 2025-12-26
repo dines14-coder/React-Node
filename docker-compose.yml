@@ -1,0 +1,27 @@
+version: "3.9"
+
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+
+  backend:
+    image: backend:v6
+    container_name: backend
+    ports:
+      - "5000:8535"
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - mongodb
+
+  frontend:
+    image: frontend:v1
+    container_name: frontend
+    ports:
+      - "85:80"
+    depends_on:
+      - backend
+

@@ -1,0 +1,140 @@
+.login-container {
+  display: flex;
+  min-height: 100vh;
+  background: #f8f9fa;
+}
+
+.login-left {
+  flex: 1;
+  background: linear-gradient(135deg, #1E5BA8 0%, #184580 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.vendor-image {
+  width: 80%;
+  max-width: 500px;
+  height: auto;
+  border-radius: 20px;
+  /* box-shadow: 0 20px 40px rgba(0,0,0,0.2); */
+}
+
+.login-right {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  background: white;
+}
+
+.login-form-container {
+  width: 100%;
+  max-width: 400px;
+}
+
+.login-title {
+  color: #1E5BA8;
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.login-subtitle {
+  color: #666;
+  text-align: center;
+  margin-bottom: 40px;
+  font-size: 1.1rem;
+}
+
+.login-form {
+  width: 100%;
+}
+
+.form-group {
+  margin-bottom: 25px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #333;
+  font-size: 14px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 15px;
+  border: 2px solid #e1e5e9;
+  border-radius: 10px;
+  font-size: 16px;
+  transition: border-color 0.3s;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #1E5BA8;
+  box-shadow: 0 0 0 3px rgba(30, 91, 168, 0.1);
+}
+
+.login-btn {
+  width: 100%;
+  background: #1E5BA8;
+  color: white;
+  border: none;
+  padding: 15px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s;
+  margin-bottom: 20px;
+}
+
+.login-btn:hover {
+  background: #184580;
+}
+
+.login-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.test-credentials {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 10px;
+  border-left: 4px solid #1E5BA8;
+}
+
+.test-credentials h4 {
+  color: #1E5BA8;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.test-credentials p {
+  margin: 5px 0;
+  font-size: 13px;
+  color: #666;
+}
+
+@media (max-width: 768px) {
+  .login-container {
+    flex-direction: column;
+  }
+  
+  .login-left {
+    min-height: 200px;
+  }
+  
+  .vendor-image {
+    width: 60%;
+    max-width: 300px;
+  }
+}

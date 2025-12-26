@@ -1,0 +1,18 @@
+/* Global scrollbar styles for all DataGrid tables */
+.MuiDataGrid-root ::-webkit-scrollbar {
+  width: 3px;
+  height: 3px;
+}
+
+.MuiDataGrid-root ::-webkit-scrollbar-track {
+  background-color: #f1f1f1;
+}
+
+.MuiDataGrid-root ::-webkit-scrollbar-thumb {
+  background-color: #5386e4ad;
+  border-radius: 4px;
+}
+
+.MuiDataGrid-root ::-webkit-scrollbar-thumb:hover {
+  background-color: #5386e4ad;
+}

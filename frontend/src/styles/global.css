@@ -1,0 +1,12 @@
+/* Global DataGrid styles to remove row click borders */
+.MuiDataGrid-row:focus {
+    outline: none !important;
+}
+
+.MuiDataGrid-cell:focus {
+    outline: none !important;
+}
+
+.MuiDataGrid-row.Mui-selected {
+    background-color: transparent !important;
+}
