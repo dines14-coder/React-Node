@@ -3,10 +3,9 @@ pipeline {
 
     environment {
                 REACT_IMAGE = "dinesh14coder/hepl:react-to-do${BUILD_NUMBER}"
-                REGISTRY_CREDENTIALS = credentials("dock-cred")
                 REPLACE="hepl:react-to-do${BUILD_NUMBER}"
                 REMOTEUSERNAME="citpladmin"
-                REMOTEIP=""
+                REMOTEIP="13.233.126.210"
                 DESTINATION_PATH="/home/citpladmin/compose"
     }
 
