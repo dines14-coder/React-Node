@@ -24,34 +24,42 @@ pipeline {
             }
         }
 
+
+		stage('Git-leaks') {
+            steps {
+                sh 'gitleaks detect --source . -r Reactleaks.json -f json || true'
+				// git branch: 'main', url: 'https://github.com/url'
+            }
+        }
+
         stage('Static Code Analysis') {
             environment {
                 SONAR_URL = "http://localhost:9000"
             }
             steps {
                 withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_AUTH_TOKEN')]) {
-                    sh '''
-                        sonar-scanner \
-                          -Dsonar.projectKey=react-todo \
-                          -Dsonar.sources=. \
-                          -Dsonar.host.url=$SONAR_URL \
-                          -Dsonar.login=$SONAR_AUTH_TOKEN
-                    '''
+                  //  sh '''
+                    //    sonar-scanner \
+                      //    -Dsonar.projectKey=react-todo \
+                        //  -Dsonar.sources=. \
+                          //-Dsonar.host.url=$SONAR_URL \
+                         // -Dsonar.login=$SONAR_AUTH_TOKEN
+                    //'''
                 }
             }
         }
         stage('Build React Image and Transfer') {
             steps {
-                script {
-                        sh 'docker --version'
-                        sh 'whoami'
-                        sh 'cd frontend && docker build -t ${REACT_IMAGE} .'         
-                }
+                //script {
+                      //  sh 'docker --version'
+                       // sh 'whoami'
+                        //sh 'cd frontend && docker build -t ${REACT_IMAGE} .'         
+                //}
                 sshagent(credentials: ['server-b-ssh']) {
-                    sh '''
-                        docker save ${REACT_IMAGE} | \
-                        ssh -o StrictHostKeyChecking=no ${REMOTEUSERNAME}@${REMOTEIP} docker load
-                    '''
+                    //sh '''
+                        //docker save ${REACT_IMAGE} | \
+                        //ssh -o StrictHostKeyChecking=no ${REMOTEUSERNAME}@${REMOTEIP} docker load
+                    //'''
                 }
             }
         }
@@ -61,13 +69,13 @@ pipeline {
                 script {
                         sh 'docker --version'
                         sh 'whoami'
-                        sh 'cd backend && docker build -t ${NODE_IMAGE} .'         
+                       // sh 'cd backend && docker build -t ${NODE_IMAGE} .'         
                 }
-                sshagent(credentials: ['server-b-ssh']) {
-                    sh '''
-                        docker save ${NODE_IMAGE} | \
-                        ssh -o StrictHostKeyChecking=no ${REMOTEUSERNAME}@${REMOTEIP} docker load
-                    '''
+                //sshagent(credentials: ['server-b-ssh']) {
+                  //  sh '''
+                    //    docker save ${NODE_IMAGE} | \
+                      //  ssh -o StrictHostKeyChecking=no ${REMOTEUSERNAME}@${REMOTEIP} docker load
+                    //'''
                 }
             }
         }
@@ -77,35 +85,35 @@ stage('Transfer Compose & Deploy') {
     steps {
         withCredentials([
             file(credentialsId: 'backend-env-file', variable: 'BACKEND_ENV'),
-            file(credentialsId: 'frontend-env-file', variable: 'FRONTEND_ENV')
+       	   file(credentialsId: 'frontend-env-file', variable: 'FRONTEND_ENV')
         ]) {
-            sshagent(credentials: ['server-b-ssh']) {
-                sh """
-                    sed -i -E "s/hepl:.*/${REACT_REPLACE}/g" docker-compose.yaml
-                    sed -i -E "s/citpl:.*/${NODE_REPLACE}/g" docker-compose.yaml
+          //  sshagent(credentials: ['server-b-ssh']) {
+            //    sh """
+              //      sed -i -E "s/hepl:.*/${REACT_REPLACE}/g" docker-compose.yaml
+                //    sed -i -E "s/citpl:.*/${NODE_REPLACE}/g" docker-compose.yaml
 
-                    ssh -o StrictHostKeyChecking=no ${REMOTEUSERNAME}@${REMOTEIP} "mkdir -p ${DESTINATION_PATH}/backend"
-                    ssh -o StrictHostKeyChecking=no ${REMOTEUSERNAME}@${REMOTEIP} "mkdir -p ${DESTINATION_PATH}/frontend"
+                  //  ssh -o StrictHostKeyChecking=no ${REMOTEUSERNAME}@${REMOTEIP} "mkdir -p ${DESTINATION_PATH}/backend"
+                    //ssh -o StrictHostKeyChecking=no ${REMOTEUSERNAME}@${REMOTEIP} "mkdir -p ${DESTINATION_PATH}/frontend"
 
-                    rsync -avz docker-compose.yaml \
-                        ${BACKEND_ENV} \
-                        ${REMOTEUSERNAME}@${REMOTEIP}:${DESTINATION_PATH}/backend/
+                   // rsync -avz docker-compose.yaml \
+                     //   ${BACKEND_ENV} \
+                       // ${REMOTEUSERNAME}@${REMOTEIP}:${DESTINATION_PATH}/backend/
 
-                    rsync -avz ${FRONTEND_ENV} \
-                        ${REMOTEUSERNAME}@${REMOTEIP}:${DESTINATION_PATH}/frontend/
-
-
-                    ssh -o StrictHostKeyChecking=no ${REMOTEUSERNAME}@${REMOTEIP} << EOF
-                        cd ${DESTINATION_PATH}
+                    //rsync -avz ${FRONTEND_ENV} \
+                      //  ${REMOTEUSERNAME}@${REMOTEIP}:${DESTINATION_PATH}/frontend/
 
 
-                        chmod 600 backend/.env
-                        chmod 600 frontend/.env
+                    //ssh -o StrictHostKeyChecking=no ${REMOTEUSERNAME}@${REMOTEIP} << EOF
+                      //  cd ${DESTINATION_PATH}
 
-                        docker compose down || true
-                        docker compose up -d
-                    EOF
-                """
+
+                       // chmod 600 backend/.env
+                     //   chmod 600 frontend/.env
+
+                      //  docker compose down || true
+                       // docker compose up -d
+                    //EOF
+                //"""
             }
         }
     }
@@ -120,13 +128,13 @@ stage('Transfer Compose & Deploy') {
             }
             steps {
                 withCredentials([string(credentialsId: 'hepl', variable: 'GITHUB_TOKEN')]) {
-                    sh '''
-                        git config user.email "dvrdineshdvrdinesh728@gmail.com"
-                        git config user.name "dines14-coder"
-                        git add docker-compose.yaml
-                        git commit -m "Update deployment image to version ${BUILD_NUMBER}"
-                        git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:main
-                    '''
+                   // sh '''
+                     //   git config user.email "dvrdineshdvrdinesh728@gmail.com"
+                       // git config user.name "dines14-coder"
+                       // git add docker-compose.yaml
+                       // git commit -m "Update deployment image to version ${BUILD_NUMBER}"
+                        //git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:main
+                    //'''
                 }
             }
         }
