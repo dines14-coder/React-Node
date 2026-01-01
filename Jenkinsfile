@@ -20,7 +20,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 sh 'ls -ltr'
-				git branch: 'main', url: 'https://github.com/url'
+				//git branch: 'main', url: 'https://github.com/url'
             }
         }
 
